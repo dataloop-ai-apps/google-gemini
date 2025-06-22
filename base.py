@@ -49,6 +49,10 @@ class ModelAdapter(dl.BaseModelAdapter):
                 break
 
         return chat_history
+    
+    def prepare_item_func(self, item: dl.Item):
+        prompt_item = dl.PromptItem.from_item(item=item)
+        return prompt_item
 
     def add_response_to_prompt(self, prompt_item, response_text, mimetype=dl.PromptType.TEXT):
         """Adds the generated response back to the prompt item."""
