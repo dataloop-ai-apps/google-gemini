@@ -1,0 +1,115 @@
+{
+  "name": "gemini-2.5",
+  "displayName": "Gemini 2.5",
+  "version": "0.0.1",
+  "scope": "public",
+  "description": "Gemini 2.5 is Google’s latest family of large multimodal AI models, capable of understanding and generating text, code, and images with improved reasoning, speed, and scalability compared to previous versions.",
+  "attributes": {
+    "Provider": "Google",
+    "Category": "Model",
+    "Gen AI": "LMM",
+    "Deployed By": "Google",
+    "Media Type": ["Image", "Text"]
+  },
+  "codebase": {
+    "type": "git",
+    "gitUrl": "https://github.com/dataloop-ai-apps/google-gemini",
+    "gitTag": "0.0.1"
+  },
+  "components": {
+    "computeConfigs": [
+      {
+        "name": "google-gemini-deploy",
+        "runtime": {
+          "podType": "regular-xs",
+          "concurrency": 10,
+          "runnerImage": "gcr.io/viewo-g/piper/agent/cpu/google-gemini:0.0.1",
+          "autoscaler": {
+            "type": "rabbitmq",
+            "minReplicas": 0,
+            "maxReplicas": 2
+          }
+        }
+      }
+    ],
+    "modules": [
+      {
+        "name": "google-gemini-module",
+        "entryPoint": "base.py",
+        "className": "ModelAdapter",
+        "computeConfig": "google-gemini-deploy",
+        "description": "Gemini 2.5 models",
+        "integrations": ["dl-google-api-key"],
+        "initInputs": [
+          {
+            "type": "Model",
+            "name": "model_entity"
+          }
+        ],
+        "functions": [
+          {
+            "name": "predict_items",
+            "input": [
+              {
+                "type": "Item[]",
+                "name": "items",
+                "description": "List of items to run inference on"
+              }
+            ],
+            "output": [
+              {
+                "type": "Item[]",
+                "name": "items",
+                "description": "The same input items for prediction."
+              },
+              {
+                "type": "Annotation[]",
+                "name": "annotations",
+                "description": "The predicted annotations."
+              }
+            ],
+            "displayName": "Predict Items",
+            "displayIcon": "",
+            "description": "Google Gemini 2.5 predict items"
+          }
+        ]
+      }
+    ],
+    "models": [
+      {
+        "name": "gemini-2.5-pro",
+        "moduleName": "google-gemini-module",
+        "scope": "project",
+        "status": "pre-trained",
+        "configuration": {
+          "system_prompt": "You are a helpful and a bit cynical assistant. Give relevant and short answers, if you dont know the answer just say it, dont make up an answer",
+          "max_output_tokens": 1024,
+          "temperature": 0.5,
+          "top_p": 0.95,
+          "seed": 5,
+          "stream": true,
+          "thinking_budget": 128,
+          "debounce_interval": 2
+        },
+        "description": "Most powerful model in the Gemini 2.5 family, capable of understanding and generating text, code, and images with improved reasoning, speed, and scalability compared to previous versions."
+      },
+      {
+        "name": "gemini-2.5-flash",
+        "moduleName": "google-gemini-module",
+        "scope": "project",
+        "status": "pre-trained",
+        "configuration": {
+          "system_prompt": "You are a helpful and a bit cynical assistant. Give relevant and short answers, if you dont know the answer just say it, dont make up an answer",
+          "max_output_tokens": 1024,
+          "temperature": 0.5,
+          "top_p": 0.95,
+          "seed": 5,
+          "stream": true,
+          "thinking_budget": 0,
+          "debounce_interval": 2
+        },
+        "description": "Fastest model in the Gemini 2.5 family, capable of understanding and generating text, code, and images with improved reasoning, speed, and scalability compared to previous versions."
+      }
+    ]
+  }
+}
